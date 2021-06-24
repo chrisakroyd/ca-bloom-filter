@@ -1,0 +1,56 @@
+{
+  "name": "ca-bloom-filter",
+  "version": "1.0.0",
+  "description": "Lightweight Bloom Filter implementation written in javascript.",
+  "keywords": [
+    "bloom",
+    "filter",
+    "probabilistic",
+    "data",
+    "structure"
+  ],
+  "main": "src/index.js",
+  "type": "module",
+  "directories": {
+    "src": "src",
+    "test": "test",
+    "examples": "examples"
+  },
+  "scripts": {
+    "test": "mocha test/*.js",
+    "coverage": "nyc --reporter=lcov mocha --experimental-loader=@istanbuljs/esm-loader-hook",
+    "local-coverage": "nyc mocha --experimental-loader=@istanbuljs/esm-loader-hook test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisakroyd/ca-bloom-filter.git"
+  },
+  "author": "Chris Akroyd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chrisakroyd/ca-bloom-filter/issues"
+  },
+  "homepage": "https://github.com/chrisakroyd/ca-bloom-filter",
+  "devDependencies": {
+    "@istanbuljs/esm-loader-hook": "^0.1.2",
+    "chai": "^4.3.4",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.23.2",
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    ".eslintrc",
+    ".gitignore",
+    "src/*.js",
+    "test/*.js"
+  ],
+  "dependencies": {
+    "bit-vec": "^1.0.4",
+    "imurmurhash": "^0.1.4",
+    "random-seedable": "^1.0.5"
+  }
+}
