@@ -11,12 +11,14 @@ class BloomFilter {
     this.bitArray = new BitVector(this.size);
     this.hashOne = new MurMur('', seedOne);
     this.hashTwo = new MurMur('', seedTwo);
+    this.inserts = 0;
   }
 
   /**
    * `bloomFilter.calculateBitIndices(key)`
    * Calculate the indices at which we set the bits to 1 in the bit array.
    * https://willwhim.wordpress.com/2011/09/03/producing-n-hash-functions-by-hashing-only-once/
+   *
    * @param {String} key
    * @returns {Array}
    */
@@ -37,32 +39,26 @@ class BloomFilter {
 
   /**
    * `bloomFilter.add(key)`
-   * Adds the given key to the filter, if all the bits are already set then it doesn't increase the count
-   * as it is assumed to be already added to the filter.
+   * Adds the given key to the filter and increments the number of inserts.
    *
    * @param {String} key
    */
   add(key) {
     const indices = this.calculateBitIndices(key);
-    let numAlreadySet = 0;
 
     for (let i = 0; i < indices.length; i += 1) {
-      if (this.bitArray.get(indices[i])) {
-        numAlreadySet += 1;
-      }
       this.bitArray.set(indices[i], 1);
     }
 
-    if (numAlreadySet < indices.length) {
-      this.count += 1;
-    }
+    this.inserts += 1;
   }
 
   /**
    * `bloomFilter.contains(key)`
-   * Tests whether the given key is already stored in the filter.
+   * Tests whether the key is stored in the filter.
+   *
    * @param {String} key
-   * @returns {Boolean}
+   * @returns {Boolean} True if the item is contained within the filter, false otherwise.
    */
   contains(key) {
     const indices = this.calculateBitIndices(key);
@@ -79,9 +75,12 @@ class BloomFilter {
 
   /**
    * `bloomFilter.equals(bloomFilter)`
-   * Tests whether the given key is already stored in the filter.
-   * @param {BloomFilter} bloomFilter
-   * @returns {Boolean}
+   * Tests whether two bloom filters are equivalent. As this is a probabilistic data structure,
+   * they are probably equal in contents. There remains a chance that they merely set the same
+   * bits with different entries.
+   *
+   * @param {BloomFilter} bloomFilter ->
+   * @returns {Boolean} True if the bloom filters are equal (same pattern of 1s and 0s).
    */
   equals(bloomFilter) {
     return bloomFilter.bitArray.equals(this.bitArray);
@@ -100,7 +99,7 @@ class BloomFilter {
    *
    * http://ws680.nist.gov/publication/get_pdf.cfm?pub_id=903775
    * http://cglab.ca/~morin/publications/ds/bloom-submitted.pdf
-   * @returns {Number}
+   * @returns {Number} False positive rate 0.0 <= fpr <= 1.0.
    */
   falsePositiveRate() {
     const rate = (this.bitArray.count() / this.bitArray.bits) ** this.k;

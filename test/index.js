@@ -131,28 +131,15 @@ describe('BloomFilter tests', () => {
       expect(bloom.bitArray.count()).to.be.above(0);
     });
 
-    // it('Should increment the count with each successful addition.', () => {
-    //   const bloom = new BloomFilter(bloomSizeSmall, numHashSmall);
-    //
-    //   bloom.add(foo);
-    //   bloom.count.should.equal(1);
-    //
-    //   bloom.add(bar);
-    //   bloom.count.should.equal(2);
-    // });
+    it('Should increment the inserts count with each successful addition.', () => {
+      const bloom = new BloomFilter(bloomSizeSmall, numHashSmall);
 
-    // it('Should not increment the count when an element is already in the filter.', () => {
-    //   const bloom = new BloomFilter(bloomSizeSmall, numHashSmall);
-    //
-    //   bloom.add(foo);
-    //   bloom.count.should.equal(1);
-    //
-    //   bloom.add(bar);
-    //   bloom.count.should.equal(2);
-    //
-    //   bloom.add(foo);
-    //   bloom.count.should.equal(2);
-    // });
+      bloom.add(foo);
+      expect(bloom.inserts).to.equal(1);
+
+      bloom.add(bar);
+      expect(bloom.inserts).to.equal(2);
+    });
 
     it('Should set the correct indices in the bit array.', () => {
       const bloom = new BloomFilter(bloomSizeSmall, numHashSmall);
@@ -162,7 +149,7 @@ describe('BloomFilter tests', () => {
       const indices = bloom.calculateBitIndices(foo);
 
       for (let i = 0; i < indices.length; i += 1) {
-        expect(bloom.bitArray.get(indices[i])).to.equal(true);
+        expect(bloom.bitArray.test(indices[i])).to.equal(true);
       }
     });
   });
