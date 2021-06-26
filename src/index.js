@@ -6,9 +6,9 @@ const seedTwo = 312312323;
 
 class BloomFilter {
   constructor(bits, numHashers) {
-    this.size = bits;
+    this.bits = bits;
     this.k = numHashers;
-    this.bitArray = new BitVector(this.size);
+    this.bitArray = new BitVector(this.bits);
     this.hashOne = new MurMur('', seedOne);
     this.hashTwo = new MurMur('', seedTwo);
     this.inserts = 0;
@@ -19,8 +19,8 @@ class BloomFilter {
    * Calculate the indices at which we set the bits to 1 in the bit array.
    * https://willwhim.wordpress.com/2011/09/03/producing-n-hash-functions-by-hashing-only-once/
    *
-   * @param {String} key
-   * @returns {Array}
+   * @param {String} key -> Item for which we calculate the bits to set.
+   * @returns {Array} An array of indices {0 <= index < this.bits} which need to be set.
    */
   calculateBitIndices(key) {
     const hash1 = this.hashOne.hash(key).result();
@@ -28,7 +28,7 @@ class BloomFilter {
     const kHashes = [];
 
     for (let i = 0; i < this.k; i += 1) {
-      kHashes.push((hash1 + (i * hash2)) % this.size);
+      kHashes.push((hash1 + (i * hash2)) % this.bits);
     }
 
     this.hashOne.reset(seedOne);
@@ -41,7 +41,7 @@ class BloomFilter {
    * `bloomFilter.add(key)`
    * Adds the given key to the filter and increments the number of inserts.
    *
-   * @param {String} key
+   * @param {String} key -> An item to add to the filter.
    */
   add(key) {
     const indices = this.calculateBitIndices(key);
@@ -57,7 +57,7 @@ class BloomFilter {
    * `bloomFilter.contains(key)`
    * Tests whether the key is stored in the filter.
    *
-   * @param {String} key
+   * @param {String} key -> The item to be tested for filter membership.
    * @returns {Boolean} True if the item is contained within the filter, false otherwise.
    */
   contains(key) {
@@ -79,7 +79,7 @@ class BloomFilter {
    * they are probably equal in contents. There remains a chance that they merely set the same
    * bits with different entries.
    *
-   * @param {BloomFilter} bloomFilter ->
+   * @param {BloomFilter} bloomFilter -> A bloom filter instance.
    * @returns {Boolean} True if the bloom filters are equal (same pattern of 1s and 0s).
    */
   equals(bloomFilter) {
