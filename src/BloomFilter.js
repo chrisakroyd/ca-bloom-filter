@@ -42,6 +42,7 @@ class BloomFilter {
    * Adds the given key to the filter and increments the number of inserts.
    *
    * @param {String} key -> An item to add to the filter.
+   * @return {BloomFilter} Returns `BloomFilter` for chaining.
    */
   add(key) {
     const indices = this.calculateBitIndices(key);
@@ -59,7 +60,7 @@ class BloomFilter {
    * Tests whether the key is stored in the filter.
    *
    * @param {String} key -> The item to be tested for filter membership.
-   * @returns {Boolean} Returns `true` if the item is contained within the filter, `false` otherwise.
+   * @returns {Boolean} Returns `true` if the item is within the filter, `false` otherwise.
    */
   contains(key) {
     const indices = this.calculateBitIndices(key);
