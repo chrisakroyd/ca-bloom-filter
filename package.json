@@ -1,7 +1,7 @@
 {
   "name": "ca-bloom-filter",
   "version": "1.0.0",
-  "description": "Lightweight Bloom Filter implementation written in javascript.",
+  "description": "A lightweight, performant bloom filter implementation with a simple API",
   "keywords": [
     "bloom",
     "filter",
@@ -50,7 +50,6 @@
   ],
   "dependencies": {
     "bit-vec": "^1.0.4",
-    "imurmurhash": "^0.1.4",
-    "random-seedable": "^1.0.5"
+    "imurmurhash": "^0.1.4"
   }
 }
