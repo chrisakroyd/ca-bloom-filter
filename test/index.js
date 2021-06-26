@@ -19,25 +19,14 @@ describe('BloomFilter tests', () => {
       const bloomMed = new BloomFilter(bloomSizeMed, numHashMed);
       const bloomLarge = new BloomFilter(bloomSizeLarge, numHashLarge);
 
-      expect(bloomSmall.size).to.equal(bloomSizeSmall);
+      expect(bloomSmall.bits).to.equal(bloomSizeSmall);
       expect(bloomSmall.k).to.equal(numHashSmall);
 
-      expect(bloomMed.size).to.equal(bloomSizeMed);
+      expect(bloomMed.bits).to.equal(bloomSizeMed);
       expect(bloomMed.k).to.equal(numHashMed);
 
-
-      expect(bloomLarge.size).to.equal(bloomSizeLarge);
+      expect(bloomLarge.bits).to.equal(bloomSizeLarge);
       expect(bloomLarge.k).to.equal(numHashLarge);
-    });
-
-    it('Should initialise the underlying BitArray to the correct length.', () => {
-      const bloomSmall = new BloomFilter(bloomSizeSmall, numHashSmall);
-      const bloomMed = new BloomFilter(bloomSizeMed, numHashMed);
-      const bloomLarge = new BloomFilter(bloomSizeLarge, numHashLarge);
-
-      expect(bloomSmall.bitArray.length).to.equal(bloomSizeSmall);
-      expect(bloomMed.bitArray.length).to.equal(bloomSizeMed);
-      expect(bloomLarge.bitArray.length).to.equal(bloomSizeLarge);
     });
   });
 
