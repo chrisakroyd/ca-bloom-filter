@@ -171,4 +171,18 @@ describe('BloomFilter tests', () => {
       expect(bloom.falsePositiveRate()).to.be.above(fooPositive);
     });
   });
+
+  describe('.equals(bloomFilter)', () => {
+    it('Should return true for bloom filters that are equivalent, false otherwise.', () => {
+      const firstBloom = new BloomFilter(bloomSizeMed, numHashSmall);
+      const secondBloom = new BloomFilter(bloomSizeMed, numHashSmall);
+
+      firstBloom.add('stest');
+      expect(firstBloom.equals(secondBloom)).to.be.false;
+      expect(secondBloom.equals(firstBloom)).to.be.false;
+      secondBloom.add('stest');
+      expect(firstBloom.equals(secondBloom)).to.be.true;
+      expect(secondBloom.equals(firstBloom)).to.be.true;
+    });
+  });
 });
