@@ -1,7 +1,7 @@
 import { BloomFilter } from './index.js';
 
 class SafeBloomFilter extends BloomFilter {
-  constructor(expectedInserts, falsePositiveRate) {
+  constructor(expectedInserts, falsePositiveRate = 0.05) {
     // @TODO review this with the aim to remove the double static func call.
     super(
       SafeBloomFilter.estimateNumberBits(expectedInserts, falsePositiveRate),
