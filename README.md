@@ -15,7 +15,7 @@ After installing
 ```js
 import BloomFilter from 'ca-bloom-filter';
 
-const bloomFilter = new BloomFilter(8);
+const bloomFilter = new BloomFilter(8, 1); // 8 bit filter using 1 hash.
 ```
 
 Example Usage:
@@ -24,7 +24,7 @@ Example Usage:
 ```js
 import BloomFilter from 'ca-bloom-filter';
 
-const bloomFilter = new BloomFilter(8);
+const bloomFilter = new BloomFilter(8, 1);
 
 bloom.contains('cheese'); // false
 bloom.add('cheese');
@@ -36,12 +36,22 @@ bloom.contains('cheese'); // true
 Below is a condensed form of the documentation, each is a function that can be found on the BloomFilter object, called like so.
 
 ```js
-const bloom = new BloomFilter(42);
+const bloom = new BloomFilter(42, 4);
 bloom.contains('cheese'); // false
 bloom.add('cheese');
 bloom.contains('cheese'); // true
 ```
 
+### BloomFilter
+
+Basic bloom filter implementation.
+
+```js
+const bloom = new BloomFilter(42, 4);
+bloom.contains('cheese'); // false
+bloom.add('cheese');
+bloom.contains('cheese'); // true
+```
 
 | Method | Parameters | Return |
 | ----------- | -------- | ------ |
@@ -51,10 +61,36 @@ bloom.contains('cheese'); // true
 | [.falsePositiveRate()](#falsepositiverate) | `None` |  Returns `Number` false positive rate 0.0 <= fpr <= 1.0. |
 | [.calculateBitIndices(key)](#calculatebitindices) | `key:String` | Returns an array of indices {0 <= index < this.bits} which need to be set. |
 
+
+### SafeBloomFilter
+
+Extends BloomFilter, implements a 'safe' version automatically sized to provide the desired false positive rate
+over the expected number of inserts. After the expected number of inserts has been passed, attempted inserts
+will throw errors.
+
+```js
+const bloom = new SafeBloomFilter(10000, 0.05);
+bloom.contains('cheese'); // false
+bloom.add('cheese');
+bloom.contains('cheese'); // true
+```
+
+| Method | Parameters | Return |
+| ----------- | -------- | ------ |
+| [.estimateNumberBits(expectedInserts, falsePositiveRate)](#estimatenumberbits) | `expectedInserts:Number, falsePositiveRate:Number` | Returns `Number`, number of bits this filter requires for safe operation. |
+| [.optimalNumHashFunctions(expectedInserts, bits)](#optimalnumhashfunctions) | `expectedInserts:Number, bits:Number` | Returns `Number`, number of Hash functions this filter requires. |
+| [.add(key)](#add-safe) | `key:String` |  Returns `BloomFilter` for chaining. |
+
 ## Full Documentation
 
+## BloomFilter
+```js
+const bloom = new BloomFilter(42, 4);
+bloom.contains('cheese'); // false
+bloom.add('cheese');
+bloom.contains('cheese'); // true
+```
 ---
-
 ### add
 `bloomFilter.add(key)`
 
@@ -159,6 +195,89 @@ Returns an array of indices {0 <= index < this.bits} which need to be set.
 
 ```js
 bloomFilter.equals(otherBloom);
+```
+
+---
+
+## SafeBloomFilter
+```js
+const bloom = new SafeBloomFilter(10000, 0.05);
+bloom.contains('cheese'); // false
+bloom.add('cheese');
+bloom.contains('cheese'); // true
+```
+---
+### add-safe
+`bloomFilter.add(key)` 
+
+Only adds an item to the filter if we are below the capacity of the filter, this avoids
+increasing the actual error rate of the filter above the desired error rate. Throws an 
+error if there are more than `expectedInserts` made to the filter.
+
+##### Parameters
+* key -> An item to add to the filter.
+
+##### Returns
+Returns `BloomFilter` for chaining.
+
+##### Example
+
+```js
+bloomFilter.add('cheese');
+```
+
+---
+
+### estimateNumberBits
+`SafeBloomFilter.estimateNumberOfBits(expectedInserts, falsePositiveRate)`
+
+Estimates the number of bits required to store the given number of elements while
+maintaining the given false positive rate.
+
+m = - (n Ln P / (Ln 2)^2)
+
+https://en.wikipedia.org/wiki/Bloom_filter
+
+https://stackoverflow.com/questions/658439/how-many-hash-functions-does-my-bloom-filter-need
+
+##### Parameters
+* expectedInserts -> Expected number of inserts that will be made.
+* falsePositiveRate -> Desired maximum false positive rate.
+
+##### Returns
+Returns `Number`, number of bits this filter requires for safe operation.
+
+##### Example
+
+```js
+SafeBloomFilter.estimateNumberBits(5000, 0.02);
+```
+
+---
+
+### optimalNumHashFunctions
+`SafeBloomFilter.optimalNumHashFunctions(expectedInserts, bits)`
+
+Calculates the optimal number of hash functions to minimise the false probability
+for the given m (size) and n (expectedInserts).
+
+k = (m / n) * ln(2).
+
+https://en.wikipedia.org/wiki/Bloom_filter
+
+https://stackoverflow.com/questions/658439/how-many-hash-functions-does-my-bloom-filter-need
+
+##### Parameters
+* expectedInserts -> Expected number of inserts that will be made.
+* bits -> Number of bits used in the filter.
+
+##### Returns
+Returns `Number`, number of Hash functions this filter requires.
+
+##### Example
+
+```js
+SafeBloomFilter.optimalNumHashFunctions(5000, 250);
 ```
 
 ---
